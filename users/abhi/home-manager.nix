@@ -3,7 +3,6 @@
 { config, lib, pkgs, ... }:
 
 let
-  sources = import ../../nix/sources.nix;
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
 
@@ -29,6 +28,7 @@ in {
   home.packages = [
     pkgs.asciinema
     pkgs.bat
+    pkgs.chezmoi
     pkgs.eza
     pkgs.fd
     pkgs.fzf
@@ -46,7 +46,8 @@ in {
     # This is automatically setup on Linux
     pkgs.cachix
   ]) ++ (lib.optionals (isLinux) [
-    # optional pkgs for Linux
+    pkgs.chromium
+    pkgs.firefox
   ]);
 
   #---------------------------------------------------------------------
@@ -57,6 +58,8 @@ in {
     LANG = "en_US.UTF-8";
     LC_CTYPE = "en_US.UTF-8";
     LC_ALL = "en_US.UTF-8";
+    PAGER = "less -FirSwX";
+    MANPAGER = "${manpager}/bin/manpager";
   };
 
 
@@ -85,23 +88,8 @@ in {
     };
   };
 
-  programs.direnv= {
-    enable = true;
-
-    config = {
-      whitelist = {
-        prefix= [
-          "$HOME/code/go/src/github.com/hashicorp"
-          "$HOME/code/go/src/github.com/mitchellh"
-        ];
-
-        exact = ["$HOME/.envrc"];
-      };
-    };
-  };
-
   programs.git = {
-    enable = false;
+    enable = true;
     userName = "Abhilash Pallerlamudi";
     userEmail = "stp.abhi@gmail.com";
     signing = {
@@ -129,21 +117,38 @@ in {
     goPrivate = [ "github.com/stpabhi"];
   };
 
+  programs.alacritty = {
+    enable = true;
+
+    settings = {
+      env.TERM = "xterm-256color";
+
+      key_bindings = [
+        { key = "K"; mods = "Command"; chars = "ClearHistory"; }
+        { key = "V"; mods = "Command"; action = "Paste"; }
+        { key = "C"; mods = "Command"; action = "Copy"; }
+        { key = "Key0"; mods = "Command"; action = "ResetFontSize"; }
+        { key = "Equals"; mods = "Command"; action = "IncreaseFontSize"; }
+        { key = "Subtract"; mods = "Command"; action = "DecreaseFontSize"; }
+      ];
+    };
+  };
+
+  programs.kitty = {
+    enable = true;
+  };
+
   services.gpg-agent = {
     enable = isLinux;
-    pinentryPackage = pkgs.pinentry-tty;
+    pinentry.package = pkgs.pinentry-tty;
 
     # cache the keys forever so we don't get asked for a password
     defaultCacheTtl = 31536000;
     maxCacheTtl = 31536000;
   };
 
-
-  # Make cursor not tiny on HiDPI screens
   home.pointerCursor = lib.mkIf (isLinux) {
     name = "Vanilla-DMZ";
     package = pkgs.vanilla-dmz;
-    size = 128;
-    x11.enable = true;
   };
 }
