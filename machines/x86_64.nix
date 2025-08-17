@@ -3,6 +3,7 @@
 
 {
   imports = [
+    ../modules/specialization/gnome.nix
     ../modules/specialization/hyprland.nix
   ];
 
@@ -60,14 +61,6 @@
     gnumake
     killall
   ];
-
-  # Our default non-specialised desktop environment.
-  services.xserver = lib.mkIf (config.specialisation != {}) {
-    enable = true;
-    xkb.layout = "us";
-    desktopManager.gnome.enable = true;
-    displayManager.gdm.enable = true;
-  };
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;

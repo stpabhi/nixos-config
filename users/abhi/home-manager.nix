@@ -46,8 +46,7 @@ in {
     # This is automatically setup on Linux
     pkgs.cachix
   ]) ++ (lib.optionals (isLinux) [
-    pkgs.chromium
-    pkgs.firefox
+
   ]);
 
   #---------------------------------------------------------------------
@@ -117,27 +116,6 @@ in {
     goPrivate = [ "github.com/stpabhi"];
   };
 
-  programs.alacritty = {
-    enable = true;
-
-    settings = {
-      env.TERM = "xterm-256color";
-
-      key_bindings = [
-        { key = "K"; mods = "Command"; chars = "ClearHistory"; }
-        { key = "V"; mods = "Command"; action = "Paste"; }
-        { key = "C"; mods = "Command"; action = "Copy"; }
-        { key = "Key0"; mods = "Command"; action = "ResetFontSize"; }
-        { key = "Equals"; mods = "Command"; action = "IncreaseFontSize"; }
-        { key = "Subtract"; mods = "Command"; action = "DecreaseFontSize"; }
-      ];
-    };
-  };
-
-  programs.kitty = {
-    enable = true;
-  };
-
   services.gpg-agent = {
     enable = isLinux;
     pinentry.package = pkgs.pinentry-tty;
@@ -150,5 +128,16 @@ in {
   home.pointerCursor = lib.mkIf (isLinux) {
     name = "Vanilla-DMZ";
     package = pkgs.vanilla-dmz;
+  };
+
+  programs.chromium = {
+      enable = true;
+      package = pkgs.brave;
+      extensions = [
+        { id = "cjpalhdlnbpafiamejdnhcphjbkeiagm"; } # ublock origin
+      ];
+      commandLineArgs = [
+        "--disable-features=WebRtcAllowInputVolumeAdjustment"
+      ];
   };
 }

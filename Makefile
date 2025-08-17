@@ -7,5 +7,5 @@ switch:
 ifeq ($(UNAME), Darwin)
 	sudo darwin-rebuild switch --flake .#
 else
-	sudo nixos-rebuild switch --flake .#homelab
+	sudo nixos-rebuild switch --specialisation gnome --flake .#homelab
 endif
