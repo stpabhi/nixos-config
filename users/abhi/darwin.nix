@@ -8,8 +8,14 @@
     ];
     brews = [
       "gnupg"
+      "starship"
     ];
   };
+
+  fonts.packages = with pkgs; [
+    nerd-fonts.fira-code
+    nerd-fonts.jetbrains-mono
+  ];
 
   users.users.abhi = {
     home = "/Users/abhi";

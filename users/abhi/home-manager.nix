@@ -18,6 +18,9 @@ in {
   # to use the old state version.
   home.stateVersion = "18.09";
 
+  # Disabled for now since we mismatch our versions. See flake.nix for details.
+  home.enableNixpkgsReleaseCheck = false;
+
   #---------------------------------------------------------------------
   # Packages
   #---------------------------------------------------------------------
@@ -38,15 +41,16 @@ in {
     pkgs.ripgrep
     pkgs.tree
     pkgs.watch
+    pkgs.oh-my-zsh
 
     pkgs.gopls
-    pkgs.zigpkgs."0.14.0"
+    pkgs.zigpkgs."0.15.1"
 
   ] ++ (lib.optionals isDarwin [
     # This is automatically setup on Linux
     pkgs.cachix
   ]) ++ (lib.optionals (isLinux) [
-
+    pkgs.starship
   ]);
 
   #---------------------------------------------------------------------
@@ -86,6 +90,29 @@ in {
       gt = "git tag";
     };
   };
+
+  programs.zsh = {
+    enable = true;
+    enableCompletion = true;
+    autosuggestion.enable = true;
+    syntaxHighlighting.enable = true;
+    history = {
+      size = 10000000;
+      save = 10000000;
+      path = "$HOME/.zsh_history";
+      extended = true;
+      ignoreAllDups = true;
+      share = true;
+    };
+
+    oh-my-zsh = {
+      enable = true;
+      plugins = [ "git" ];
+      theme = "robbyrussell";
+    };
+  };
+
+  programs.starship.enable = true;
 
   programs.git = {
     enable = true;

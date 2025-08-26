@@ -40,7 +40,6 @@
     # End Nix
     '';
 
-
   environment.shells = with pkgs; [ bashInteractive zsh ];
   environment.systemPackages = with pkgs; [
     cachix
