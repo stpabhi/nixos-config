@@ -21,6 +21,7 @@ in {
   # Disabled for now since we mismatch our versions. See flake.nix for details.
   home.enableNixpkgsReleaseCheck = false;
 
+  xdg.enable = true;
   #---------------------------------------------------------------------
   # Packages
   #---------------------------------------------------------------------
@@ -51,6 +52,9 @@ in {
     pkgs.cachix
   ]) ++ (lib.optionals (isLinux) [
     pkgs.starship
+    pkgs.ghostty
+    pkgs.qemu
+    pkgs.OVMF
   ]);
 
   #---------------------------------------------------------------------
@@ -65,6 +69,10 @@ in {
     MANPAGER = "${manpager}/bin/manpager";
   };
 
+  xdg.configFile = {
+  } //  (if isLinux then {
+    "ghostty/config".text = builtins.readFile ./ghostty.linux;
+  } else {});
 
   #---------------------------------------------------------------------
   # Programs
@@ -133,6 +141,11 @@ in {
     enable = true;
     goPath = "go";
     goPrivate = [ "github.com/stpabhi"];
+  };
+
+  programs.neovim = {
+    enable = true;
+    package = inputs.neovim-nightly-overlay.packages.${pkgs.system}.default;
   };
 
   services.gpg-agent = {
