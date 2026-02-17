@@ -4,6 +4,7 @@
   homebrew = {
     enable = true;
     casks  = [
+      "codex"
       "istat-menus"
     ];
     brews = [

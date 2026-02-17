@@ -14,12 +14,19 @@ let
     cat "$1" | col -bx | bat --language man --style plain
   ''));
 in {
+  home.username = "abhi";
+  home.homeDirectory = if isDarwin then "/Users/abhi" else "/home/abhi";
   # Home-manager 22.11 requires this be set. We never set it so we have
   # to use the old state version.
   home.stateVersion = "18.09";
 
   # Disabled for now since we mismatch our versions. See flake.nix for details.
   home.enableNixpkgsReleaseCheck = false;
+  manual = {
+    html.enable = false;
+    manpages.enable = false;
+    json.enable = false;
+  };
 
   xdg.enable = true;
   #---------------------------------------------------------------------
@@ -40,18 +47,19 @@ in {
     pkgs.htop
     pkgs.jq
     pkgs.ripgrep
+    pkgs.starship
     pkgs.tree
     pkgs.watch
     pkgs.oh-my-zsh
 
     pkgs.gopls
-    pkgs.zigpkgs."0.15.1"
+    pkgs.zigpkgs."0.15.2"
+    pkgs.codex
 
   ] ++ (lib.optionals isDarwin [
     # This is automatically setup on Linux
     pkgs.cachix
   ]) ++ (lib.optionals (isLinux) [
-    pkgs.starship
     pkgs.ghostty
     pkgs.qemu
     pkgs.OVMF
@@ -96,6 +104,7 @@ in {
     enableCompletion = true;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
+    dotDir = config.home.homeDirectory;
     history = {
       size = 10000000;
       save = 10000000;
@@ -116,17 +125,12 @@ in {
 
   programs.git = {
     enable = true;
-    userName = "Abhilash Pallerlamudi";
-    userEmail = "stp.abhi@gmail.com";
     signing = {
       signByDefault = true;
     };
-    aliases = {
-      cleanup = "!git branch --merged | grep  -v '\\*\\|master\\|develop' | xargs -n 1 -r git branch -d";
-      prettylog = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(r) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative";
-      root = "rev-parse --show-toplevel";
-    };
-    extraConfig = {
+    settings = {
+      user.name = "Abhilash Pallerlamudi";
+      user.email = "stp.abhi@gmail.com";
       branch.autosetuprebase = "always";
       color.ui = true;
       core.askPass = ""; # needs to be empty to use terminal for ask pass
@@ -134,18 +138,20 @@ in {
       github.user = "stpabhi";
       push.default = "tracking";
       init.defaultBranch = "main";
+      aliases = {
+        cleanup = "!git branch --merged | grep  -v '\\*\\|master\\|develop' | xargs -n 1 -r git branch -d";
+        prettylog = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(r) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative";
+        root = "rev-parse --show-toplevel";
+      };
     };
   };
 
   programs.go = {
     enable = true;
-    goPath = "go";
-    goPrivate = [ "github.com/stpabhi"];
-  };
-
-  programs.neovim = {
-    enable = true;
-    package = inputs.neovim-nightly-overlay.packages.${pkgs.system}.default;
+    env = {
+      GOPATH = "go";
+      GOPRIVATE = [ "github.com/stpabhi"];
+    };
   };
 
   services.gpg-agent = {

@@ -7,7 +7,6 @@
 
   # We use proprietary software on this machine
   nixpkgs.config.allowUnfree = true;
-
   nix = {
     # We use the determinate-nix installer which manages Nix for us,
     # so we don't want nix-darwin to do it.
